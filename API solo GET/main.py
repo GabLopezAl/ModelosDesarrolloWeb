@@ -46,7 +46,7 @@ def estudiantes(file_path: str) -> list[User]:
 async def students():
     file_path = "Registros.xlsx"
     users = estudiantes(file_path)
-    return users
+    return {"Alumnos registrados", users}
 
 # Segundo
 @app.get("/carreras")
@@ -74,3 +74,35 @@ async def carreras():
     carreras_unicas = sorted(df["Semestre"].unique().tolist())
 
     return {"Semestres": carreras_unicas}
+
+
+# Path con solo dos niveles
+
+# Primero
+@app.get("/estudiantes/mujeres")
+async def carreras():
+    file_path = "Registros.xlsx"
+    df = pd.read_excel(file_path)
+    estud_mujeres = df[df["Genero"] == "FEMENINO"]
+
+    return  estud_mujeres.to_dict(orient="records")
+
+
+# Segundo
+@app.get("/estudiantes/hombres")
+async def carreras():
+    file_path = "Registros.xlsx"
+    df = pd.read_excel(file_path)
+    estud_hombres = df[df["Genero"] == "MASCULINO"]
+
+    return  estud_hombres.to_dict(orient="records")
+
+
+# Tercero
+@app.get("/estudiantes/veinteaños")
+async def carreras():
+    file_path = "Registros.xlsx"
+    df = pd.read_excel(file_path)
+    edad_veinte = df[df["Edad"] == 20]
+
+    return  edad_veinte.to_dict(orient="records")
