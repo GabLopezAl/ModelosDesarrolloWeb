@@ -59,7 +59,7 @@ async def carreras():
 
 # Tercero
 @app.get("/generos")
-async def carreras():
+async def generos():
     file_path = "Registros.xlsx"
     df = pd.read_excel(file_path)
     carreras_unicas = df["Genero"].unique().tolist()
@@ -68,7 +68,7 @@ async def carreras():
 
 # Cuarto
 @app.get("/semestres")
-async def carreras():
+async def semestres():
     file_path = "Registros.xlsx"
     df = pd.read_excel(file_path)
     carreras_unicas = sorted(df["Semestre"].unique().tolist())
@@ -80,7 +80,7 @@ async def carreras():
 
 # Primero
 @app.get("/estudiantes/mujeres")
-async def carreras():
+async def estudMujeres():
     file_path = "Registros.xlsx"
     df = pd.read_excel(file_path)
     estud_mujeres = df[df["Genero"] == "FEMENINO"]
@@ -90,7 +90,7 @@ async def carreras():
 
 # Segundo
 @app.get("/estudiantes/hombres")
-async def carreras():
+async def estudHombres():
     file_path = "Registros.xlsx"
     df = pd.read_excel(file_path)
     estud_hombres = df[df["Genero"] == "MASCULINO"]
@@ -100,9 +100,41 @@ async def carreras():
 
 # Tercero
 @app.get("/estudiantes/veinteaños")
-async def carreras():
+async def estudVeinteAños():
     file_path = "Registros.xlsx"
     df = pd.read_excel(file_path)
     edad_veinte = df[df["Edad"] == 20]
 
     return  edad_veinte.to_dict(orient="records")
+
+
+# Path con solo tres niveles
+
+# Primero
+@app.get("/estudiantes/ITI/promedio")
+async def estudITIProm():
+    file_path = "Registros.xlsx"
+    df = pd.read_excel(file_path)
+    carrera = df[df["Carrera"] == "ITI"]
+    promedio = carrera[["Nombre Completo","Carrera","Promedio"]]
+    return  promedio.to_dict(orient="records")
+
+
+# Segundo
+@app.get("/estudiantes/masculinos/octavosemestre")
+async def estudMascOctaSem():
+    file_path = "Registros.xlsx"
+    df = pd.read_excel(file_path)
+    gen_sem = df[(df["Genero"] == "MASCULINO") & (df["Semestre"] == 8)]
+    promedio = gen_sem[["Nombre Completo","Genero","Semestre"]]
+    return  promedio.to_dict(orient="records")
+
+
+# Tercero
+@app.get("/estudiantes/ICC/porcentajecarrera")
+async def estudICCPorcCarrera():
+    file_path = "Registros.xlsx"
+    df = pd.read_excel(file_path)
+    carrera = df[df["Carrera"] == "ICC"]
+    procentaje = carrera[["Nombre Completo","Carrera","Porcentaje de carrera"]]
+    return  procentaje.to_dict(orient="records")
