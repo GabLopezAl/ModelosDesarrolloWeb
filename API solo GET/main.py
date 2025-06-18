@@ -20,10 +20,8 @@ class User(BaseModel):
     materias_reprobadas: int
     promedio: float
 
-# Leer Excel y convertir a lista de objetos User
 def estudiantes(file_path: str) -> list[User]:
     df = pd.read_excel(file_path)
-    # Renombramos las columnas del Excel para que coincidan con el modelo
     df = df.rename(columns={
         "Nombre Completo": "nombre_completo",
         "Matricula": "matricula",
@@ -46,7 +44,7 @@ def estudiantes(file_path: str) -> list[User]:
 async def students():
     file_path = "Registros.xlsx"
     users = estudiantes(file_path)
-    return {"Alumnos registrados", users}
+    return {"Alumnos registrados": users}
 
 # Segundo
 @app.get("/carreras")
