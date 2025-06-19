@@ -49,7 +49,115 @@ async def userclass(nomComp:str):
         return list(users)
     except:
         return{"No se ha encontrado al usuario"}
+    
 
+"""MATRICULA"""
+@app.get("/usersclass/matricula/{matr}")
+async def userclass(matr:int):
+    file_path = "Registros.xlsx"
+    users = estudiantes(file_path)
+    users = filter (lambda user: user.matricula == matr, users)
+    try:
+        return list(users)
+    except:
+        return{"No se ha encontrado al usuario"}
+
+
+"""EDAD"""
+@app.get("/usersclass/edad/{edad}")
+async def userclass(edad:int):
+    file_path = "Registros.xlsx"
+    users = estudiantes(file_path)
+    users = filter (lambda user: user.edad == edad, users)
+    try:
+        return list(users)
+    except:
+        return{"No se ha encontrado al usuario"}
+    
+
+"""CARRERA"""
+@app.get("/usersclass/carrera/{carrera}")
+async def userclass(carrera:str):
+    file_path = "Registros.xlsx"
+    users = estudiantes(file_path)
+    users = filter (lambda user: user.carrera == carrera, users)
+    try:
+        return list(users)
+    except:
+        return{"No se ha encontrado al usuario"}
+    
+
+"""GENERO"""
+@app.get("/usersclass/genero/{genero}")
+async def userclass(genero:str):
+    file_path = "Registros.xlsx"
+    users = estudiantes(file_path)
+    users = filter (lambda user: user.genero == genero, users)
+    try:
+        return list(users)
+    except:
+        return{"No se ha encontrado al usuario"}
+    
+
+"""SEMESTRE"""
+@app.get("/usersclass/semestre/{sem}")
+async def userclass(sem:int):
+    file_path = "Registros.xlsx"
+    users = estudiantes(file_path)
+    users = filter (lambda user: user.semestre == sem, users)
+    try:
+        return list(users)
+    except:
+        return{"No se ha encontrado al usuario"}
+    
+
+"""Porcentaje de carrera"""
+@app.get("/usersclass/porcentajeCarrera/{porcCarr}")
+async def userclass(porcCarr:float):
+    file_path = "Registros.xlsx"
+    users = estudiantes(file_path)
+    users = filter (lambda user: user.porcentaje_carrera == porcCarr, users)
+    try:
+        return list(users)
+    except:
+        return{"No se ha encontrado al usuario"}
+
+
+
+"""FACULTAD"""
+@app.get("/usersclass/facultad/{fac}")
+async def userclass(fac:str):
+    file_path = "Registros.xlsx"
+    users = estudiantes(file_path)
+    users = filter (lambda user: user.facultad == fac, users)
+    try:
+        return list(users)
+    except:
+        return{"No se ha encontrado al usuario"}
+    
+
+"""MATERIAS REPROBADAS"""
+@app.get("/usersclass/materiasReprob/{matRep}")
+async def userclass(matRep:int):
+    file_path = "Registros.xlsx"
+    users = estudiantes(file_path)
+    users = filter (lambda user: user.materias_reprobadas == matRep, users)
+    try:
+        return list(users)
+    except:
+        return{"No se ha encontrado al usuario"}
+    
+
+"""PROMEDIO"""
+@app.get("/usersclass/promedio/{prom}")
+async def userclass(prom:float):
+    file_path = "Registros.xlsx"
+    users = estudiantes(file_path)
+    users = filter (lambda user: user.promedio >= prom, users)
+    try:
+        return list(users)
+    except:
+        return{"No se ha encontrado al usuario"}
 # # Path con un solo nivel
 
 # # Primero
