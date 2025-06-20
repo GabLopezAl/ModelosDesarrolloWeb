@@ -191,11 +191,64 @@ async def usersclass(matricula:int):
 
 """CARRERA y EDAD"""
 @app.get("/usersclass4/")
-async def usersclass(matricula:int):
+async def usersclass(career:str, age: int):
     file_path = "Registros.xlsx"
     users = estudiantes(file_path)
-    users = filter (lambda user: user.matricula == matricula,users)
+    users = filter (lambda user: user.carrera == career and user.edad == age,users)
     try:
         return list(users)
     except:
         return{"No se ha encontrado al usuario"}
+"""http://127.0.0.1:8000/usersclass4/?career=ITI&age=21"""
+
+
+"""MATERIAS REPROBADAS y PROMEDIO"""
+@app.get("/usersclass5/")
+async def usersclass(materias:int, promedio: float):
+    file_path = "Registros.xlsx"
+    users = estudiantes(file_path)
+    users = filter (lambda user: user.materias_reprobadas == materias and user.promedio >= promedio,users)
+    try:
+        return list(users)
+    except:
+        return{"No se ha encontrado al usuario"}
+"""http://127.0.0.1:8000/usersclass5/?materias=1&promedio=8"""
+
+
+"""EDAD, SEMESTRE y CARRERA"""
+@app.get("/usersclass6/")
+async def usersclass(edad:int, semestre: int, carrera: str):
+    file_path = "Registros.xlsx"
+    users = estudiantes(file_path)
+    users = filter (lambda user: user.edad == edad and user.semestre >= semestre and user.carrera == carrera,users)
+    try:
+        return list(users)
+    except:
+        return{"No se ha encontrado al usuario"}
+"""http://127.0.0.1:8000/usersclass6/?edad=22&semestre=8&carrera=ICC"""
+
+
+"""PORCENTAJE CARRERA y MATERIAS REPROBADAS"""
+@app.get("/usersclass7/")
+async def usersclass(porcentaje:float, materias: int):
+    file_path = "Registros.xlsx"
+    users = estudiantes(file_path)
+    users = filter (lambda user: user.porcentaje_carrera >= porcentaje and user.materias_reprobadas == materias,users)
+    try:
+        return list(users)
+    except:
+        return{"No se ha encontrado al usuario"}
+"""http://127.0.0.1:8000/usersclass7/?porcentaje=0.80&materias=0"""
+
+
+"""GENERO"""
+@app.get("/usersclass8/")
+async def usersclass(genero:str):
+    file_path = "Registros.xlsx"
+    users = estudiantes(file_path)
+    users = filter (lambda user: user.genero == genero,users)
+    try:
+        return list(users)
+    except:
+        return{"No se ha encontrado al usuario"}
+"""http://127.0.0.1:8000/usersclass8/?genero=FEMENINO"""
