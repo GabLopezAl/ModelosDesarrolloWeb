@@ -1,6 +1,7 @@
 # Importamos librerías
 import pandas as pd
 from fastapi import FastAPI
+from fastapi import Path
 from pydantic import BaseModel
 from typing import Optional
 
@@ -52,31 +53,27 @@ async def usersclass():
 
 """POST"""
 @app.post("/usersclass/")
-async def userclass(user:User):
+async def userclass(user: User):
     file_path = "Registros.xlsx"
-    users = estudiantes(file_path)
 
-    # for index, saved_user in enumerate(users):
-    #     if saved_user.matricula == user.matricula:
-    #         return {"error": "El usuario ya existe"}
-    #     else:
-    #         users.append(user)
-    #         return user
-    # Verificar si ya existe el usuario
-    if user.matricula in users["matricula"].astype(str).values:
-        return {"error": "El usuario ya existe"}
+    usuarios: list[User] = estudiantes(file_path)
 
-    # Convertir el nuevo usuario en DataFrame
-    new_user_df = pd.DataFrame([user.dict()])
+    for u in usuarios:
+        if u.matricula == user.matricula:
+            return {"error": "El usuario ya existe"}
 
-    # Concatenar y guardar
-    df_actualizado = pd.concat([users, new_user_df], ignore_index=True)
+    usuarios.append(user)
+
+    df_actualizado = pd.DataFrame([u.dict() for u in usuarios])
     df_actualizado.to_excel(file_path, index=False)
+
+    return {"mensaje": "Usuario agregado correctamente", "usuario": user}
+
     
 
 """PUT"""
 @app.put("/usersclass/")
-async def userclass(user:User):
+async def userclass(user: User):
     file_path = "Registros.xlsx"
     users = estudiantes(file_path)
     found = False
@@ -85,7 +82,35 @@ async def userclass(user:User):
         if saved_user.matricula == user.matricula:
             users[index] = user
             found = True
+            break
+
     if not found:
         return {"error": "No se pudo actualizar el usuario"}
-    else:
-        return {"Registro actualizado correctamente"}
+
+    df_actualizado = pd.DataFrame([u.dict() for u in users])
+    df_actualizado.to_excel(file_path, index=False)
+
+    return {"mensaje": "Registro actualizado correctamente", "usuario": user}
+
+
+"""DELETE"""
+@app.delete("/usersclass/{matricula}")
+async def delete_user(matricula: int = Path(..., description="Matrícula del usuario a eliminar")):
+    file_path = "Registros.xlsx"
+    users = estudiantes(file_path)
+    found = False
+
+    usuarios_filtrados = []
+    for user in users:
+        if user.matricula == matricula:
+            found = True
+            continue
+        usuarios_filtrados.append(user)
+
+    if not found:
+        return {"error": "Usuario no encontrado"}
+
+    df_actualizado = pd.DataFrame([u.dict() for u in usuarios_filtrados])
+    df_actualizado.to_excel(file_path, index=False)
+
+    return {"Usuario eliminado correctamente"}
