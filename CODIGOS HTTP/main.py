@@ -1,7 +1,7 @@
 # Importamos librerías
 import pandas as pd
-from fastapi import FastAPI
 from fastapi import Path
+from fastapi import FastAPI, HTTPException, status
 from pydantic import BaseModel
 from typing import Optional
 
@@ -41,18 +41,19 @@ def estudiantes(file_path: str) -> list[User]:
 
 
 """GET"""
-@app.get("/usersclass/")
+@app.get("/usersclass/",status_code=status.HTTP_200_OK)
 async def usersclass():
     file_path = "Registros.xlsx"
     users = estudiantes(file_path)
     try:
         return list(users)
     except:
-        return{"No se pudieron obtener los usuarios"}
+        raise HTTPException(status_code= status.HTTP_404_NOT_FOUND,detail={"message": "No se puede obtener la lista de los alumnos"})
+        # return{"No se pudieron obtener los usuarios"}
     
 
 """POST"""
-@app.post("/usersclass/")
+@app.post("/usersclass/",status_code=status.HTTP_201_CREATED)
 async def userclass(user: User):
     file_path = "Registros.xlsx"
 
@@ -60,7 +61,8 @@ async def userclass(user: User):
 
     for u in usuarios:
         if u.matricula == user.matricula:
-            return {"error": "El usuario ya existe"}
+            raise HTTPException(status_code= status.HTTP_406_NOT_ACCEPTABLE,detail={"message": "El alumno ya existe"})
+            # return {"error": "El usuario ya existe"}
 
     usuarios.append(user)
 
@@ -72,7 +74,7 @@ async def userclass(user: User):
     
 
 """PUT"""
-@app.put("/usersclass/")
+@app.put("/usersclass/",status_code=status.HTTP_200_OK)
 async def userclass(user: User):
     file_path = "Registros.xlsx"
     users = estudiantes(file_path)
@@ -85,7 +87,8 @@ async def userclass(user: User):
             break
 
     if not found:
-        return {"error": "No se pudo actualizar el usuario"}
+        raise HTTPException(status_code= status.HTTP_404_NOT_FOUND,detail={"message": "No se pudo actualizar el usuario"})
+        # return {"error": "No se pudo actualizar el usuario"}
 
     excel_actualizado = pd.DataFrame([u.dict() for u in users])
     excel_actualizado.to_excel(file_path, index=False)
@@ -94,7 +97,7 @@ async def userclass(user: User):
 
 
 """DELETE"""
-@app.delete("/usersclass/{matricula}")
+@app.delete("/usersclass/{matricula}",status_code=status.HTTP_200_OK)
 async def delete_user(matricula: int = Path(..., description="Matrícula del usuario a eliminar")):
     file_path = "Registros.xlsx"
     users = estudiantes(file_path)
@@ -108,7 +111,8 @@ async def delete_user(matricula: int = Path(..., description="Matrícula del usu
         usuarios_filtrados.append(user)
 
     if not found:
-        return {"error": "Usuario no encontrado"}
+        raise HTTPException(status_code= status.HTTP_404_NOT_FOUND,detail={"message": "No se pudo eliminar el usuario"})
+       # return {"error": "Usuario no encontrado"}
 
     excel_actualizado = pd.DataFrame([u.dict() for u in usuarios_filtrados])
     excel_actualizado.to_excel(file_path, index=False)
