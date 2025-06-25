@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Perfil de Usuario</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background: #f0f0f0;
+            text-align: center;
+            padding: 50px;
+        }
+
+        .card {
+            background: white;
+            border-radius: 10px;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+            display: inline-block;
+            padding: 20px;
+            max-width: 250px;
+        }
+
+        .card img {
+            width: 100%;
+            border-radius: 10px;
+        }
+
+        h2 {
+            margin: 10px 0 0 0;
+        }
+
+        p {
+            margin: 5px 0;
+            color: #666;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="card">
+        <p>Bienvenido a tu perfil.</p>
+        <br>
+        <img src="{{ user_0.foto_url }}" alt="Foto del usuario">
+        <h3>{{ user_0.nombre_completo }}</h3>
+        <br>
+        <p><b>Matricula:</b> {{user_0.matricula}}</p>
+        <p><b>Edad:</b> {{user_0.edad}}</p>
+        <p><b>Carrera:</b> {{user_0.carrera}}</p>
+        <p><b>Semestre:</b> {{user_0.semestre}}</p>
+        <p><b>Promedio:</b> {{user_0.promedio}}</p>
+    </div>
+</body>
+
+</html>
