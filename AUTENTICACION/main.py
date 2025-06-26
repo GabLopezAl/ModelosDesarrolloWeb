@@ -74,24 +74,81 @@ file_path = "Registros.xlsx"
 users = estudiantes(file_path)
 
 #1 Función para regresar el usuario completo de la base de datos (users_db), con contraseña encriptada
-def search_user_db(username:str):
+def search_user_db(matricula:int):
     
-    if username in users:
-        return UserDB(**users[username]) #** devuelve todos los parámetros del usuario que coincida con username
+    if matricula in users:
+        return UserDB(**users[matricula]) #** devuelve todos los parámetros del usuario que coincida con username
 
 #4 Función final para devolver usuario a la solicitud del backend   
-def search_user(username:str):
-    if username in users:
-        return User(**users[username])
+def search_user(matricula:int):
+    if matricula in users:
+        return User(**users[matricula])
     
 #2 Esta es la dependencia para buscar al usuario
 async def auth_user(token:str=Depends(oauth2)):
     try:
-        username= jwt.decode(token, SECRET, algorithms=[ALGORITHM]).get("sub")
-        if username is None:
+        matricula= jwt.decode(token, SECRET, algorithms=[ALGORITHM]).get("sub")
+        if matricula is None:
             raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Credenciales de autenticación inválidas")
     
     except JWTError:
         raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Credenciales de autenticación inválidas")
 
-    return search_user(username) #Esta es la entrega final, usuario sin password
+    return search_user(matricula) #Esta es la entrega final, usuario sin password
+
+async def current_user(token: str = Depends(oauth2)) -> User:
+    try:
+        payload = jwt.decode(token, SECRET, algorithms=[ALGORITHM])
+        matricula = payload.get("sub")
+        if matricula is None:
+            raise HTTPException(
+                status_code=status.HTTP_401_UNAUTHORIZED,
+                detail="Token inválido"
+            )
+    except JWTError:
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="Token inválido"
+        )
+    
+    user = next((u for u in users if str(u.matricula) == str(matricula)), None)
+    if user is None:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail="Usuario no encontrado"
+        )
+    
+    return user
+
+@app.post("/login/")
+async def login(form: OAuth2PasswordRequestForm = Depends()):
+    # Buscar el usuario con esa matrícula
+    user_db = next((user for user in users if str(user.matricula) == form.username), None)
+
+    if not user_db:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="El usuario no es correcto"
+        )
+
+    if not crypt.verify(form.password, user_db.contrasena):
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="La contraseña no es correcta"
+        )
+
+    access_token_expiration = timedelta(minutes=ACCESS_TOKEN_DURATION)
+    expire = datetime.utcnow() + access_token_expiration
+    access_token = {
+        "sub": str(user_db.matricula),
+        "exp": expire
+    }
+
+    return {
+        "access_token": jwt.encode(access_token, SECRET, algorithm=ALGORITHM),
+        "token_type": "bearer"
+    }
+
+@app.get("/users/me/")
+async def me(user:User= Depends (current_user)): #Crea un user de tipo User que depende de la función (current_user)
+    return user
